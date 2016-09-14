@@ -8,3 +8,22 @@ body:after{
     top:0;
     bottom:0;
 }
+.price-in-usd {
+    position: absolute;
+    top: 0;
+    left: 0px;
+    width: 100px;
+    padding: 5px;
+    font-size: 1.2em;
+    height: 30px;
+    background: transparent;
+    color: #333;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px #f1f1f1,-1px -1px 0px #f1f1f1,-1px 1px 0px #f1f1f1,1px -1px 0px #f1f1f1,-2px 0 0px #f1f1f1,0px -2px 0px #f1f1f1,2px 0px 0px #f1f1f1,0px 2px 0px #f1f1f1;
+}
+.main-page-price-in-usd {
+    color: #333;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px #f1f1f1,-1px -1px 0px #f1f1f1,-1px 1px 0px #f1f1f1,1px -1px 0px #f1f1f1,-2px 0 0px #f1f1f1,0px -2px 0px #f1f1f1,2px 0px 0px #f1f1f1,0px 2px 0px #f1f1f1;
+}

@@ -28,9 +28,13 @@
     {
       "matches": [
         "http://vk.com/*",
-        "https://vk.com/*"
+        "https://vk.com/*",
+        "http://steamcommunity.com/*",
+        "https://steamcommunity.com/*",
+        "https://market.csgo.com/*"
       ],
-      "css": [ "styles/commentblocker.css" ]
+      "css": [ "styles/commentblocker.css" ],
+      "all_frames": true
     }
   ],
 
