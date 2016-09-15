@@ -2,14 +2,37 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.tabs.executeScript(tab.id, {
         code: "(" + calculate.toString() + ")();"
     });
+    //var newURL = "http://stackoverflow.com/";
+    //chrome.tabs.create({ url: newURL });
 });
 
 ///   document.getElementsByClassName("market_commodity_orders_header_promote")[1]
 
 /// https://api.csgofast.com/price/all
 
+//               render?start=0&count=10&currency=3&language=english&format=json
+
+//   https://steamcommunity.com/market/search?q=AK-47+%7C+Красная+линия
+
 
 var calculate = function() {
+    var xhr = new XMLHttpRequest();
+    //long url for take Course rate
+    var url = "https://steamcommunity.com/market/search?q=AK-47+%7C+Красная+линия";
+    xhr.open('GET', url, true);
+    xhr.send();
+
+    xhr.onreadystatechange = function () { // (3)
+        var course;
+        if (xhr.readyState != 4) return;
+
+        if (xhr.status != 200) {
+            alert(xhr.status + ': ' + xhr.statusText);
+        } else {
+            console.log(xhr.responseText);
+        }
+
+    };
     var extensionLink;
     function coursRate(count, course){
         return count / course;
@@ -79,6 +102,6 @@ var calculate = function() {
         : (document.getElementsByTagName("head")[0].removeChild(document.getElementById("extension")));
         getCourse();
 
-
+    frame();
     console.log(11);
 };

@@ -4,6 +4,7 @@
     visibility: hidden !important;
 }
 
+/*
 .wall_module .replies_wrap,
 #wl_replies_wrap,
 #wl_reply_form_wrap,
@@ -15,10 +16,10 @@
     display: none !important;
     visibility: hidden !important;
 }
-
+*/
 body:after {
     position: fixed;
-    content: "Hello Sukers";
+    content: "Hello";
     top: 5px;
     right: 5px;
     padding: 6px 12px;
