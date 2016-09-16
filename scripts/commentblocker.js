@@ -113,7 +113,7 @@ var calculate = function () {
                 if (parsedResponce.length > 1) {
                     alert(parsedResponce.length);
                 }
-                
+
                 //currently it is not work but it is all information what we need
                 return allPricesFromSearchSteam;
             }
@@ -156,6 +156,4 @@ var calculate = function () {
         )
         : (document.getElementsByTagName("head")[0].removeChild(document.getElementById("extension")));
     getCourse();
-
-    console.log(11);
 };
