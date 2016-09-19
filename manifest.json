@@ -27,8 +27,6 @@
   "content_scripts": [
     {
       "matches": [
-        "http://vk.com/*",
-        "https://vk.com/*",
         "http://steamcommunity.com/*",
         "https://steamcommunity.com/*",
         "https://market.csgo.com/*"

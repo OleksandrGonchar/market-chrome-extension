@@ -2,8 +2,8 @@ body:after{
     content: '';
     display: block;
     position: fixed;
-    height: 100px;
-    width: 100px;
+    height: 10px;
+    width: 40px;
     background: red;
     top:0;
     bottom:0;

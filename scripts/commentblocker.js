@@ -23,19 +23,62 @@ var calculate = function () {
         return count / course;
     }
 
-    function addPriceInUsdToDomEllement(elem, price) {
-        var div = document.createElement('div');
-        div.className = "price-in-usd";
-        div.innerHTML = '<a href="' +
-            searchLinkSteam +
-            elem.getElementsByClassName('name')[0].textContent +
-            '"  target="_blank"><strong>$</strong>' +
-            price.toFixed(2) +
-            '</a>';
-        if (price.toFixed(2) == 0.62)getPriceFromStaemMarket(elem.getElementsByClassName('name')[0].textContent);
-        //console.log(elem.getElementsByClassName('name')[0].textContent);
+    var testFlag = true;
 
-        elem.getElementsByClassName('imageblock')[0].appendChild(div);
+    function addPriceInUsdToDomEllement(elem, price, timeOut) {
+        var name = elem.getElementsByClassName('name')[0].textContent;
+        var promice;
+
+        function domManipulation(name, price) {
+            var linkForAll = '<a href="' + searchLinkSteam +
+                    name +
+                    '"  target="_blank"><strong>$</strong>' +
+                    price.toFixed(2) +
+                    '</a>',
+                linkForExpensive = '';
+
+            if (testFlag && price.toFixed(2) > 0.5 ) {
+
+                promise = new Promise(function (resolve, reject) {
+
+                    console.log("Begin", timeOut * 1000);
+                    setTimeout(function () {
+                        getPriceFromStaemMarket(name)
+                            .then(function (response) {
+                                var cost = parseUnsverFromSteam(response, name);
+                                console.log(price, cost.price);
+                                linkForExpensive = '<a href="#">$' +
+                                    (+cost.price - price.toFixed(2)).toFixed(2) +
+                                    '</a>';
+                                elem.getElementsByClassName('link-for-expensive')[0].innerHTML = linkForExpensive;
+                                return true;//alert("Fulfilled: " + response);
+
+                                // переведёт промис в состояние fulfilled с результатом "result"
+                            }, function (error) {
+                                return console.log("Rejected: " + error);
+                            });
+
+                        resolve("result");
+                    }, timeOut * 2000);
+                });
+                promise.then(function (result) {
+                    // первая функция-обработчик - запустится при вызове resolve
+                    console.log("End", timeOut * 1000);
+                    //alert("Fulfilled: " + result); // result - аргумент resolve
+                }, function (error) {
+                    // вторая функция - запустится при вызове reject
+                    console.log("Rejected: " + error); // error - аргумент reject
+                });
+
+                //testFlag = false;
+            }
+            var div = document.createElement('div');
+            div.className = "price-in-usd";
+            div.innerHTML = '<div>' + linkForAll + '</div><div class="link-for-expensive"></div>';
+            elem.getElementsByClassName('imageblock')[0].appendChild(div);
+        }
+
+        domManipulation(name, price);
     }
 
     function calculatePriceInUsd(course) {
@@ -47,12 +90,12 @@ var calculate = function () {
             curentItem = item[i];
             price = curentItem.getElementsByClassName('price')[0].textContent;
             price = coursRate(price, course);
-            console.log(price, curentItem.getElementsByClassName('price')[0].textContent);
-            addPriceInUsdToDomEllement(curentItem, price);
+            //console.log(price, curentItem.getElementsByClassName('price')[0].textContent);
+            addPriceInUsdToDomEllement(curentItem, price, i);
         }
 
         item = document.getElementsByClassName('ip-price');
-        console.log(item);
+        //console.log(item);
         if (item.length) {
             price = item[0].getElementsByClassName('ip-bestprice')[0].textContent;
             var div = document.createElement('div');
@@ -67,59 +110,70 @@ var calculate = function () {
     }
 
     function getPriceFromStaemMarket(name) {
-        var url = searchLinkSteam + name;
+        console.log("some one do request to steam");
+        return new Promise(function (resolve, reject) {
+            var url = searchLinkSteam + name;
 
-        var xhr = new XMLHttpRequest(),
-            parsedResponce,
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', url, true);
+            xhr.send();
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState != 4) return;
+
+                if (xhr.status != 200) {
+                    reject(this.status + ': ' + this.statusText);
+                } else {
+                    resolve(this.response, name);
+                }
+            };
+        });
+    }
+
+    function parseUnsverFromSteam(responce, name) {
+        //console.log(name);
+        var parsedResponce,
             partWitnPriceAndNames,
             allPricesFromSearchSteam = [],
             allNamesFromSearchSteam = [],
             ingormation = {};
 
-        xhr.open('GET', url, true);
-        xhr.send();
+        parsedResponce = responce.replace(/\s{2,}/g, '')
+            .match(/<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig);
 
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState != 4) return;
+        partWitnPriceAndNames = /<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig.exec(responce.replace(/\s{2,}/g, ''));
+        partWitnPriceAndNames = partWitnPriceAndNames[0].match(/<span class="normal_price">\$\d+\.\d+/g);
 
-            if (xhr.status != 200) {
-                alert(xhr.status + ': ' + xhr.statusText);
-            } else {
-                //console.log(xhr.responseText.replace(/\s{2,}/g, '').toString());
-                parsedResponce = xhr.responseText.replace(/\s{2,}/g, '').match(/<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig);
-                //console.log(parsedResponce);
+        for (var e = 0; e < partWitnPriceAndNames.length; e++) {
+            allPricesFromSearchSteam[e] = partWitnPriceAndNames[e].replace(/<span class="normal_price">\$/ig, '');
+        }
 
-                ///this long expresions finde array of all prices for all founded staff
-                console.log((/<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig.exec(xhr.responseText.replace(/\s{2,}/g, '')))[0].match(/<span class="normal_price">\$\d+\.\d+/g));
-                partWitnPriceAndNames = /<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig.exec(xhr.responseText.replace(/\s{2,}/g, ''));
-                partWitnPriceAndNames = partWitnPriceAndNames[0].match(/<span class="normal_price">\$\d+\.\d+/g);
-
-                for (var e = 0; e < partWitnPriceAndNames.length; e++) {
-                    allPricesFromSearchSteam[e] = partWitnPriceAndNames[e].replace(/<span class="normal_price">\$/ig, '');
-                }
-
-                allNamesFromSearchSteam = (/<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig.exec(xhr.responseText.replace(/\s{2,}/g, '')))[0].match(/_name" class="market_listing_item_name" style="color: \#\w{6};">[^<]+/g);
-                for (var k = 0; k < allNamesFromSearchSteam.length; k++) {
-                    allNamesFromSearchSteam[k] = allNamesFromSearchSteam[k].replace(/_name" class="market_listing_item_name" style="color: \#\w{6};">/ig, '');
-                    console.log(allNamesFromSearchSteam[k] == name.trim(),allNamesFromSearchSteam[k] ,name);
-                }
-
-                ingormation.allNames = allNamesFromSearchSteam;
-                ingormation.allPrices = allPricesFromSearchSteam;
-
-                console.log(allPricesFromSearchSteam);
-                console.log(allNamesFromSearchSteam);
-
-                if (parsedResponce.length > 1) {
-                    alert(parsedResponce.length);
-                }
-
-                //currently it is not work but it is all information what we need
-                return allPricesFromSearchSteam;
+        allNamesFromSearchSteam = (/<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig
+            .exec(responce
+                .replace(/\s{2,}/g, '')))[0]
+            .match(/_name" class="market_listing_item_name" style="color: \#\w{6};">[^<]+/g);
+        for (var k = 0; k < allNamesFromSearchSteam.length; k++) {
+            allNamesFromSearchSteam[k] = allNamesFromSearchSteam[k].replace(/_name" class="market_listing_item_name" style="color: \#\w{6};">/ig, '');
+            console.log(allNamesFromSearchSteam[k] == name.trim(), allNamesFromSearchSteam[k], name);
+            if (allNamesFromSearchSteam[k] == name.trim()) {
+                ingormation.name = allNamesFromSearchSteam[k];
+                ingormation.price = allPricesFromSearchSteam[k];
             }
+        }
 
-        };
+        ingormation.allNames = allNamesFromSearchSteam;
+        ingormation.allPrices = allPricesFromSearchSteam;
 
+        //console.log(ingormation.price);
+        //console.log(ingormation.name );
+
+        if (parsedResponce.length > 1) {
+            alert(parsedResponce.length);
+        }
+
+        //currently it is not work but it is all information what we need
+        return ingormation;
     }
 
     function getCourse() {
