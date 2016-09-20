@@ -1,16 +1,4 @@
-chrome.browserAction.onClicked.addListener(function (tab) {
-    chrome.tabs.executeScript(tab.id, {
-        code: "(" + calculate.toString() + ")();"
-    });
-});
-
-///   document.getElementsByClassName("market_commodity_orders_header_promote")[1]
-/// https://api.csgofast.com/price/all
-//   https://steamcommunity.com/market/search?q=AK-47+%7C+Красная+линия
-
-//https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=USD&date=20160920&json
-
-
+/*
 var calculate = function () {
     var extensionLink,
         searchLinkSteam = 'https://steamcommunity.com/market/search?q=';
@@ -30,41 +18,36 @@ var calculate = function () {
                     name +
                     '"  target="_blank"><strong>$</strong>' +
                     price.toFixed(2) +
-                    ' market</a>',
+                    '</a>',
                 linkForExpensive = '';
 
-            if (testFlag && price.toFixed(2) > 0.05) {
+            if (testFlag && price.toFixed(2) > 0.5 ) {
 
                 promise = new Promise(function (resolve, reject) {
 
-                    console.log("Begin", timeOut * 2000);
+                    console.log("Begin", timeOut * 1000);
                     setTimeout(function () {
                         getPriceFromStaemMarket(name)
                             .then(function (response) {
                                 var cost = parseUnsverFromSteam(response, name);
-                                var parsedSteamCost = +cost.price;
-                                var steamCommission = parsedSteamCost *0.13;
-
+                                console.log(price, cost.price);
                                 linkForExpensive = '<a href="#">$' +
-                                    parsedSteamCost.toFixed(2) +
-                                    ' - $' +
-                                    price.toFixed(2) +
-                                    ' = ' +
-                                    (parsedSteamCost - price - steamCommission).toFixed(2) +
-                                    'sale on steam</a>';
-
-                                console.log(parsedSteamCost, price,steamCommission, parsedSteamCost - price - steamCommission);
+                                    (+cost.price - price.toFixed(2)).toFixed(2) +
+                                    '</a>';
                                 elem.getElementsByClassName('link-for-expensive')[0].innerHTML = linkForExpensive;
-                                return this;
+                                return true;//alert("Fulfilled: " + response);
+
+                                // переведёт промис в состояние fulfilled с результатом "result"
                             }, function (error) {
                                 return console.log("Rejected: " + error);
                             });
-                        resolve();
+
+                        resolve("result");
                     }, timeOut * 2000);
                 });
                 promise.then(function (result) {
                     // первая функция-обработчик - запустится при вызове resolve
-                    console.log("End", timeOut * 2000);
+                    console.log("End", timeOut * 1000);
                     //alert("Fulfilled: " + result); // result - аргумент resolve
                 }, function (error) {
                     // вторая функция - запустится при вызове reject
@@ -91,6 +74,7 @@ var calculate = function () {
             curentItem = item[i];
             price = curentItem.getElementsByClassName('price')[0].textContent;
             price = coursRate(price, course);
+            //console.log(price, curentItem.getElementsByClassName('price')[0].textContent);
             addPriceInUsdToDomEllement(curentItem, price, i);
         }
 
@@ -132,6 +116,7 @@ var calculate = function () {
     }
 
     function parseUnsverFromSteam(responce, name) {
+        //console.log(name);
         var parsedResponce,
             partWitnPriceAndNames,
             allPricesFromSearchSteam = [],
@@ -141,7 +126,7 @@ var calculate = function () {
         parsedResponce = responce.replace(/\s{2,}/g, '')
             .match(/<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig);
 
-        partWitnPriceAndNames = /<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig.exec(parsedResponce);
+        partWitnPriceAndNames = /<a class="market_listing_row_link.+<\/span><\/div><div style="clear: both"><\/div><\/div><\/a><\/div>/ig.exec(responce.replace(/\s{2,}/g, ''));
         partWitnPriceAndNames = partWitnPriceAndNames[0].match(/<span class="normal_price">\$\d+\.\d+/g);
 
         for (var e = 0; e < partWitnPriceAndNames.length; e++) {
@@ -153,54 +138,50 @@ var calculate = function () {
                 .replace(/\s{2,}/g, '')))[0]
             .match(/_name" class="market_listing_item_name" style="color: \#\w{6};">[^<]+/g);
         for (var k = 0; k < allNamesFromSearchSteam.length; k++) {
-
-            allNamesFromSearchSteam[k] = allNamesFromSearchSteam[k]
-                .replace(/_name" class="market_listing_item_name" style="color: \#\w{6};">/ig, '');
-
+            allNamesFromSearchSteam[k] = allNamesFromSearchSteam[k].replace(/_name" class="market_listing_item_name" style="color: \#\w{6};">/ig, '');
+            console.log(allNamesFromSearchSteam[k] == name.trim(), allNamesFromSearchSteam[k], name);
             if (allNamesFromSearchSteam[k] == name.trim()) {
                 ingormation.name = allNamesFromSearchSteam[k];
                 ingormation.price = allPricesFromSearchSteam[k];
             }
         }
-        if (!ingormation.price) {
-            ingormation.price = allPricesFromSearchSteam[0];
-        }
 
         ingormation.allNames = allNamesFromSearchSteam;
         ingormation.allPrices = allPricesFromSearchSteam;
 
+
+        if (parsedResponce.length > 1) {
+            alert(parsedResponce.length);
+        }
+
+        //currently it is not work but it is all information what we need
         return ingormation;
     }
 
     function getCourse() {
         var xhr = new XMLHttpRequest();
-        //long url for take Course rate from yahoo
+        //long url for take Course rate
         var url = "https://query.yahooapis.com/v1/public/yql?q=select+*+from+yahoo.finance.xchange+where+pair+=+%22USDRUB%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
         xhr.open('GET', url, true);
         xhr.send();
 
-        xhr.onreadystatechange = function () {
+        xhr.onreadystatechange = function () { // (3)
             var course;
             if (xhr.readyState != 4) return;
 
             if (xhr.status != 200) {
-                alert('Can not take course rate! \n' + xhr.status + ': ' + xhr.statusText);
+                alert(xhr.status + ': ' + xhr.statusText);
             } else {
+                //alert(xhr.responseText);
                 course = JSON.parse(xhr.responseText).query.results.rate.Ask;
                 calculatePriceInUsd(course);
             }
+
         };
     }
-
-    (document.getElementById("extension") == null) ?
-        (
-            extensionLink = document.createElement("link"),
-                extensionLink.href = chrome.extension.getURL("/styles/commentblocker_on.css"),
-                extensionLink.id = "extension",
-                extensionLink.type = "text/css",
-                extensionLink.rel = "stylesheet",
-                document.getElementsByTagName("head")[0].appendChild(extensionLink)
-        )
-        : (document.getElementsByTagName("head")[0].removeChild(document.getElementById("extension")));
     getCourse();
 };
+calculate();
+
+document.getElementsByClassName("sortby").addEventListener("click", calculate, false);
+*/
