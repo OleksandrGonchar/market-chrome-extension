@@ -25,7 +25,8 @@ var calculate = function () {
         var name = elem.getElementsByClassName('name')[0].textContent;
 
         function domManipulation(name, price) {
-            var promise;
+            var promise,
+              timeoutRatio = 15000;
             var linkForAll = '<a href="' + searchLinkSteam +
                     name +
                     '"  target="_blank" title="Price on market in USD ($)"><strong>$</strong>' +
@@ -37,7 +38,7 @@ var calculate = function () {
 
                 promise = new Promise(function (resolve, reject) {
 
-                    console.log("Begin", timeOut * 2000);
+                    console.log("Begin", timeOut * timeoutRatio);
                     setTimeout(function () {
                         getPriceFromStaemMarket(name)
                             .then(function (response) {
@@ -60,11 +61,11 @@ var calculate = function () {
                                 return console.log("Rejected: " + error);
                             });
                         resolve();
-                    }, timeOut * 2000);
+                    }, timeOut * timeoutRatio);
                 });
                 promise.then(function (result) {
                     // первая функция-обработчик - запустится при вызове resolve
-                    console.log("End", timeOut * 2000);
+                    console.log("End", timeOut * timeoutRatio);
                     //alert("Fulfilled: " + result); // result - аргумент resolve
                 }, function (error) {
                     // вторая функция - запустится при вызове reject
