@@ -26,7 +26,7 @@ var calculate = function () {
 
         function domManipulation(name, price) {
             var promise,
-              timeoutRatio = 15000;
+                timeoutRatio = 15000;
             var linkForAll = '<a href="' + searchLinkSteam +
                     name +
                     '"  target="_blank" title="Price on market in USD ($)"><strong>$</strong>' +
@@ -44,7 +44,11 @@ var calculate = function () {
                             .then(function (response) {
                                 var cost = parseUnsverFromSteam(response, name);
                                 var parsedSteamCost = +cost.price;
-                                var steamCommission = parsedSteamCost *0.13;
+                                var steamCommission = parsedSteamCost * 0.13;
+
+                                if (steamCommission < 0.02) {
+                                    steamCommission = 0.02;
+                                }
 
                                 linkForExpensive = '<a href="#" title="Calculate your money after sold this item on steam (without steam commission)">$' +
                                     parsedSteamCost.toFixed(2) +
@@ -54,7 +58,7 @@ var calculate = function () {
                                     (parsedSteamCost - price - steamCommission).toFixed(2) +
                                     '</a>';
 
-                                console.log(parsedSteamCost, price,steamCommission, parsedSteamCost - price - steamCommission);
+                                console.log(parsedSteamCost, price, steamCommission, parsedSteamCost - price - steamCommission);
                                 elem.getElementsByClassName('link-for-expensive')[0].innerHTML = linkForExpensive;
                                 return this;
                             }, function (error) {
