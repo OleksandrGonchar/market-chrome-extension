@@ -28,9 +28,9 @@ var calculate = function () {
             var promise;
             var linkForAll = '<a href="' + searchLinkSteam +
                     name +
-                    '"  target="_blank"><strong>$</strong>' +
+                    '"  target="_blank" title="Price on market in USD ($)"><strong>$</strong>' +
                     price.toFixed(2) +
-                    ' market</a>',
+                    '</a>',
                 linkForExpensive = '';
 
             if (testFlag && price.toFixed(2) > 0.05) {
@@ -45,13 +45,13 @@ var calculate = function () {
                                 var parsedSteamCost = +cost.price;
                                 var steamCommission = parsedSteamCost *0.13;
 
-                                linkForExpensive = '<a href="#">$' +
+                                linkForExpensive = '<a href="#" title="Calculate your money after sold this item on steam (without steam commission)">$' +
                                     parsedSteamCost.toFixed(2) +
                                     ' - $' +
                                     price.toFixed(2) +
                                     ' = ' +
                                     (parsedSteamCost - price - steamCommission).toFixed(2) +
-                                    'sale on steam</a>';
+                                    '</a>';
 
                                 console.log(parsedSteamCost, price,steamCommission, parsedSteamCost - price - steamCommission);
                                 elem.getElementsByClassName('link-for-expensive')[0].innerHTML = linkForExpensive;
