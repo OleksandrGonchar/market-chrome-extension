@@ -1,17 +1,7 @@
-body:after{
-    content: '';
-    display: block;
-    position: fixed;
-    height: 10px;
-    width: 40px;
-    background: red;
-    top:0;
-    bottom:0;
-}
 .price-in-usd {
     position: absolute;
     top: 0;
-    left: 0px;
+    left: 0;
     width: 100px;
     padding: 5px;
     font-size: 0.9em;
@@ -19,11 +9,25 @@ body:after{
     background: transparent;
     color: #333;
     font-weight: bold;
-    text-shadow: 1px 1px 0px #f1f1f1,-1px -1px 0px #f1f1f1,-1px 1px 0px #f1f1f1,1px -1px 0px #f1f1f1,-2px 0 0px #f1f1f1,0px -2px 0px #f1f1f1,2px 0px 0px #f1f1f1,0px 2px 0px #f1f1f1;
+    text-shadow: 1px 1px 0 #f1f1f1,
+        -1px -1px 0 #f1f1f1,
+        -1px 1px 0 #f1f1f1,
+        1px -1px 0 #f1f1f1,
+        -2px 0 0 #f1f1f1,
+        0 -2px 0 #f1f1f1,
+        2px 0 0 #f1f1f1,
+        0 2px 0 #f1f1f1;
 }
 .main-page-price-in-usd {
     color: #333;
     font-size: 2em;
     font-weight: bold;
-    text-shadow: 1px 1px 0px #f1f1f1,-1px -1px 0px #f1f1f1,-1px 1px 0px #f1f1f1,1px -1px 0px #f1f1f1,-2px 0 0px #f1f1f1,0px -2px 0px #f1f1f1,2px 0px 0px #f1f1f1,0px 2px 0px #f1f1f1;
+    text-shadow: 1px 1px 0 #f1f1f1,
+        -1px -1px 0 #f1f1f1,
+        -1px 1px 0 #f1f1f1,
+        1px -1px 0 #f1f1f1,
+        -2px 0 0 #f1f1f1,
+        0 -2px 0 #f1f1f1,
+        2px 0 0 #f1f1f1,
+        0 2px 0 #f1f1f1;
 }

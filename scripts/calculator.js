@@ -19,6 +19,28 @@ var calculate = function () {
         return count / course;
     }
 
+    var calulateIsReady = (function () {
+        var flag = 0,
+            body = document.getElementsByTagName("body")[0],
+            className = "conpliteGettPriceFromSteam";
+        return {
+            addUnComplete: function () {
+                flag++;
+                body.className = body.className.replace(/\bconpliteGettPriceFromSteam/,'');
+            },
+            addComplite: function () {
+                flag--;
+                if (flag === 0) {
+                    body.classList.add(className);
+                    console.log("true");
+                } else {
+                    body.className = body.className.replace(/\bconpliteGettPriceFromSteam/,'');
+                    console.log("else", flag);
+                }
+            }
+        }
+    })();
+
     var testFlag = true;
 
     function addPriceInUsdToDomEllement(elem, price, timeOut) {
@@ -34,8 +56,8 @@ var calculate = function () {
                     '</a>',
                 linkForExpensive = '';
 
-            if (testFlag && price.toFixed(2) > 0.05) {
-
+            if (testFlag /*&& price.toFixed(2) > 0.03*/) {
+                calulateIsReady.addUnComplete();
                 promise = new Promise(function (resolve, reject) {
 
                     console.log("Begin", timeOut * timeoutRatio);
@@ -60,6 +82,8 @@ var calculate = function () {
 
                                 console.log(parsedSteamCost, price, steamCommission, parsedSteamCost - price - steamCommission);
                                 elem.getElementsByClassName('link-for-expensive')[0].innerHTML = linkForExpensive;
+
+                                calulateIsReady.addComplite();
                                 return this;
                             }, function (error) {
                                 return console.log("Rejected: " + error);
