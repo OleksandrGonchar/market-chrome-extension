@@ -19,23 +19,74 @@ var calculate = function () {
         return count / course;
     }
 
+    function calculatePercent(b, max) {
+        return (b / max * 100).toFixed(0);
+    }
+
+    var bestPrice = 0;
+
+    function resetBestPrice() {
+        var item = document.getElementsByClassName('item'),
+            len = item.length,
+            curItem;
+        for (var i = 0; i < len; i++) {
+            curItem = item[i];
+            curItem.className = curItem.className.replace(/best-price/, '');
+        }
+    }
+
+    function checkBestPrice(currentItem) {
+        var allItem = document.getElementsByClassName("imageblock"),
+            elementGiveMe,
+            elemntCoast,
+            stepCoast,
+            elemntCoastElem = currentItem.getElementsByClassName("price-in-usd-link"),
+            elementGiveMeElem = currentItem.getElementsByClassName("link-for-expensive");
+
+        if (elemntCoastElem.length) {
+            elemntCoast = elemntCoastElem[0].textContent.replace(/.*\$/, '');
+        }
+        if (elementGiveMeElem.length) {
+            elementGiveMe = elementGiveMeElem[0].textContent.replace(/.+= /, '');
+            //console.log(elementGiveMe);
+            stepCoast = calculatePercent(elementGiveMe, elemntCoast);
+            if (stepCoast > bestPrice) {
+                bestPrice = stepCoast;
+                resetBestPrice();
+                currentItem.className += ' best-price';
+            }
+            console.log(calculatePercent(elementGiveMe, elemntCoast));
+        }
+
+
+    }
+
     var calulateIsReady = (function () {
         var flag = 0,
-            body = document.getElementsByTagName("body")[0],
-            className = "conpliteGettPriceFromSteam";
+            max;
+
+        var div = document.createElement("div");
+        var span = document.createElement("span");
+        span.textContent = "0";
+        div.className = "visualEffects";
+        div.appendChild(span);
+        document.body.appendChild(div);
+
         return {
             addUnComplete: function () {
                 flag++;
-                body.className = body.className.replace(/\bconpliteGettPriceFromSteam/,'');
+                max = flag;
+                div.className = div.className.replace(/calculated/, '');
             },
             addComplite: function () {
                 flag--;
+                span.textContent = calculatePercent(max - flag, max);
                 if (flag === 0) {
-                    body.classList.add(className);
                     console.log("true");
+                    div.className += ' calculated';
                 } else {
-                    body.className = body.className.replace(/\bconpliteGettPriceFromSteam/,'');
                     console.log("else", flag);
+                    div.className = div.className.replace(/calculated/, '');
                 }
             }
         }
@@ -49,7 +100,7 @@ var calculate = function () {
         function domManipulation(name, price) {
             var promise,
                 timeoutRatio = 15000;
-            var linkForAll = '<a href="' + searchLinkSteam +
+            var linkForAll = '<a class="price-in-usd-link" href="' + searchLinkSteam +
                     name +
                     '"  target="_blank" title="Price on market in USD ($)"><strong>$</strong>' +
                     price.toFixed(2) +
@@ -60,10 +111,13 @@ var calculate = function () {
                 calulateIsReady.addUnComplete();
                 promise = new Promise(function (resolve, reject) {
 
-                    console.log("Begin", timeOut * timeoutRatio);
+                    //console.log("Begin", timeOut * timeoutRatio);
                     setTimeout(function () {
                         getPriceFromStaemMarket(name)
                             .then(function (response) {
+
+                                calulateIsReady.addComplite();
+
                                 var cost = parseUnsverFromSteam(response, name);
                                 var parsedSteamCost = +cost.price;
                                 var steamCommission = parsedSteamCost * 0.13;
@@ -83,7 +137,8 @@ var calculate = function () {
                                 console.log(parsedSteamCost, price, steamCommission, parsedSteamCost - price - steamCommission);
                                 elem.getElementsByClassName('link-for-expensive')[0].innerHTML = linkForExpensive;
 
-                                calulateIsReady.addComplite();
+                                checkBestPrice(elem);
+
                                 return this;
                             }, function (error) {
                                 return console.log("Rejected: " + error);
@@ -112,7 +167,7 @@ var calculate = function () {
     }
 
     function calculatePriceInUsd(course) {
-        var item = document.getElementsByClassName('item'),
+        var item = document.getElementsByClassName('market-right-inner')[0].getElementsByClassName('item'),
             price = 0,
             curentItem;
 
@@ -124,7 +179,6 @@ var calculate = function () {
         }
 
         item = document.getElementsByClassName('ip-price');
-        //console.log(item);
         if (item.length) {
             price = item[0].getElementsByClassName('ip-bestprice')[0].textContent;
             var div = document.createElement('div');
@@ -139,7 +193,6 @@ var calculate = function () {
     }
 
     function getPriceFromStaemMarket(name) {
-        console.log("some one do request to steam");
         return new Promise(function (resolve, reject) {
             var url = searchLinkSteam + name;
 

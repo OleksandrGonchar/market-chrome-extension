@@ -1,10 +1,11 @@
 @charset "utf-8";
-body:after{
+.visualEffects/*,
+body:after*/{
     content: 'At work';
     display: block;
     position: fixed;
     height: 20px;
-    width: 100px;
+    width: 120px;
     text-align: center;
     background: red;
     border: 1px solid #ddd;
@@ -14,6 +15,15 @@ body:after{
     top: 5px;
     left: 5px;
     z-index: 9999;
+}
+.visualEffects:before {
+    content: 'Processed ';
+}
+.visualEffects:after {
+    content: '%';
+}
+.calculated {
+    background-color: #8c5;
 }
 .conpliteGettPriceFromSteam:after {
     position: fixed;
@@ -41,6 +51,9 @@ body:after{
     0 -2px 0 #f1f1f1,
     2px 0 0 #f1f1f1,
     0 2px 0 #f1f1f1;
+}
+.best-price {
+    box-shadow: 0 0 2px 4px #8c5;
 }
 .main-page-price-in-usd {
     color: #333;
