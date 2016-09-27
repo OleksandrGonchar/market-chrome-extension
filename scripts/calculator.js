@@ -20,10 +20,9 @@ var calculate = function () {
     }
 
     function calculatePercent(b, max) {
-        return (b / max * 100).toFixed(0);
+        return +(b / max * 100).toFixed(0);
     }
 
-    var bestPrice = 0;
 
     function resetBestPrice() {
         var item = document.getElementsByClassName('item'),
@@ -35,6 +34,7 @@ var calculate = function () {
         }
     }
 
+    var bestPrice = 0;
     function checkBestPrice(currentItem) {
         var allItem = document.getElementsByClassName("imageblock"),
             elementGiveMe,
@@ -44,18 +44,22 @@ var calculate = function () {
             elementGiveMeElem = currentItem.getElementsByClassName("link-for-expensive");
 
         if (elemntCoastElem.length) {
-            elemntCoast = elemntCoastElem[0].textContent.replace(/.*\$/, '');
+            elemntCoast = +elemntCoastElem[0].textContent.replace(/.*\$/, '');
         }
         if (elementGiveMeElem.length) {
-            elementGiveMe = elementGiveMeElem[0].textContent.replace(/.+= /, '');
+            elementGiveMe = +elementGiveMeElem[0].textContent.replace(/.+= /, '');
             //console.log(elementGiveMe);
             stepCoast = calculatePercent(elementGiveMe, elemntCoast);
+
+            console.log("I have after sell", elementGiveMe, "I pay", elemntCoast, "Percent money", calculatePercent(elementGiveMe, elemntCoast));
+            console.log(stepCoast > bestPrice, "price on this step", stepCoast , "best price", bestPrice);
+
             if (stepCoast > bestPrice) {
                 bestPrice = stepCoast;
                 resetBestPrice();
                 currentItem.className += ' best-price';
             }
-            console.log(calculatePercent(elementGiveMe, elemntCoast));
+            //console.log(calculatePercent(elementGiveMe, elemntCoast));
         }
 
 
@@ -82,10 +86,10 @@ var calculate = function () {
                 flag--;
                 span.textContent = calculatePercent(max - flag, max);
                 if (flag === 0) {
-                    console.log("true");
+                    //console.log("true");
                     div.className += ' calculated';
                 } else {
-                    console.log("else", flag);
+                    //console.log("else", flag);
                     div.className = div.className.replace(/calculated/, '');
                 }
             }
@@ -134,7 +138,7 @@ var calculate = function () {
                                     (parsedSteamCost - price - steamCommission).toFixed(2) +
                                     '</a>';
 
-                                console.log(parsedSteamCost, price, steamCommission, parsedSteamCost - price - steamCommission);
+                                //console.log(parsedSteamCost, price, steamCommission, parsedSteamCost - price - steamCommission);
                                 elem.getElementsByClassName('link-for-expensive')[0].innerHTML = linkForExpensive;
 
                                 checkBestPrice(elem);
@@ -148,11 +152,11 @@ var calculate = function () {
                 });
                 promise.then(function (result) {
                     // первая функция-обработчик - запустится при вызове resolve
-                    console.log("End", timeOut * timeoutRatio);
+                    //console.log("End", timeOut * timeoutRatio);
                     //alert("Fulfilled: " + result); // result - аргумент resolve
                 }, function (error) {
                     // вторая функция - запустится при вызове reject
-                    console.log("Rejected: " + error); // error - аргумент reject
+                    //console.log("Rejected: " + error); // error - аргумент reject
                 });
 
                 //testFlag = false;
